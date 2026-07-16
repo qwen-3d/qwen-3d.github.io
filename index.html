@@ -1,144 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="description"
-        content="Qwen-3D: A Generalist 3D Vision-Language Model for Spatial Understanding">
-  <meta name="keywords" content="Qwen3D, Qwen-3D, Qwen">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Qwen-3D: A Generalist 3D Vision-Language Model for Spatial Understanding. Geometry-aware attention and mask-based decoding for 3D grounding, segmentation, and VQA.">
+  <meta name="keywords" content="Qwen-3D, 3D VLM, 3D grounding, instance segmentation, spatial reasoning, ECCV">
   <title>Qwen-3D: A Generalist 3D Vision-Language Model for Spatial Understanding</title>
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script>
-    window.dataLayer = window.dataLayer || [];
-
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-
-    gtag('js', new Date());
-
-    gtag('config', 'G-PYVRSFMDRL');
-  </script>
-
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
-        rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
   <link rel="stylesheet" href="./static/css/bulma.min.css">
   <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
   <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="./static/css/qwen3d.css">
   <link rel="icon" href="./static/images/favicon.svg">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script defer src="./static/js/fontawesome.all.min.js"></script>
   <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
   <script src="./static/js/index.js"></script>
 </head>
 <body>
 
-<!-- <nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a> -->
-  <!-- </div>
-  <div class="navbar-menu">
-    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="https://keunhong.com">
-      <span class="icon">
-          <i class="fas fa-home"></i>
-      </span>
-      </a>
-
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link">
-          More Research
-        </a>
-        <div class="navbar-dropdown">
-          <a class="navbar-item" href="https://hypernerf.github.io">
-            HyperNeRF
-          </a>
-          <a class="navbar-item" href="https://nerfies.github.io">
-            Nerfies
-          </a>
-          <a class="navbar-item" href="https://latentfusion.github.io">
-            LatentFusion
-          </a>
-          <a class="navbar-item" href="https://photoshape.github.io">
-            PhotoShape
-          </a>
-        </div>
-      </div>
+<nav class="side-nav" id="top-nav">
+  <div class="container is-max-desktop">
+    <div class="nav-inner">
+      <a href="#overview" class="is-active">Overview</a>
+      <a href="#problem">Problem</a>
+      <a href="#method">Method</a>
+      <a href="#results">Results</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#future">Future</a>
+      <a href="#bibtex">BibTeX</a>
     </div>
-
   </div>
-</nav> -->
+</nav>
 
-
-<section class="hero">
+<section class="hero" id="overview">
   <div class="hero-body">
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Qwen-3D: A Generalist 3D Vision-Language Model for Spatial Understanding</h1>
+          <h1 class="title is-1 publication-title">
+            Qwen-3D: A Generalist 3D Vision-Language Model for Spatial Understanding
+          </h1>
           <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              <a href="https://github.com/ll220">Lucy Lin</a><sup>1*</sup>,</span>
-            <span class="author-block">
-              <a href="https://ayushjain1144.github.io/">Ayush Jain</a><sup>1*</sup>,</span>
-            <span class="author-block">
-              <a href="https://liuyifan22.github.io/">Yifan Liu</a><sup>1,2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://www.cs.cmu.edu/~katef/">Katerina Fragkiadaki</a><sup>1</sup>,
-            </span>
+            <span class="author-block"><a href="#">Lucy Lin</a><sup>†</sup>,</span>
+            <span class="author-block"><a href="#">Ayush Jain</a><sup>†</sup>,</span>
+            <span class="author-block"><a href="#">Yifan Liu</a>,</span>
+            <span class="author-block"><a href="#">Katerina Fragkiadaki</a></span>
           </div>
-
           <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>Carnegie Mellon University,</span>
-            <span class="author-block"><sup>2</sup>Tsinghua University</span>
+            <span class="author-block">Carnegie Mellon University</span>
           </div>
+          <p class="eql-footnote"><sup>†</sup>Equal contribution</p>
+          <div class="publication-venue" style="margin: 0.75rem auto 1.25rem;">ECCV 2026</div>
 
-          <div class="column has-text-centered">
-            <div class="publication-links">
-              <!-- PDF Link. -->
-              <span class="link-block">
-                <a href="https://github.com/ll220/qwen3d"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper (Coming Soon)</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="https://github.com/ll220/qwen3d"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv (Coming Soon)</span>
-                </a>
-              </span>
-              <!-- Code Link. -->
-              <span class="link-block">
-                <a href="https://github.com/ll220/qwen3d"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-            </div>
-
+          <div class="publication-links">
+            <span class="link-block">
+              <a href="#bibtex" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                <span>Paper</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="https://qwen-3d.github.io/" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fab fa-github"></i></span>
+                <span>Code</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="#results" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fas fa-chart-bar"></i></span>
+                <span>Results</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="#gallery" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fas fa-images"></i></span>
+                <span>Demo</span>
+              </a>
+            </span>
           </div>
         </div>
       </div>
@@ -148,242 +91,480 @@
 
 <section class="hero teaser">
   <div class="container is-max-desktop">
-    <div class="hero-body">
-      <img id="teaser" src="./static/images/teaser_v6-1.png" alt="Teaser">
-      <h2 class="subtitle has-text-centered">
-        Qwen-3D is a generalist 3D vision-language model capable of reasoning over 3D, 2D, and text modalities.
+    <div class="hero-body has-text-centered">
+      <div class="highlight-banner">
+        <span class="dot"></span>
+        <span>
+          Geometry-aware attention is not enough — 3D LMMs also need geometry-aware decoding.
+          Qwen-3D connects full vision–language features to a mask decoder for dense 2D/3D grounding.
+        </span>
+      </div>
+
+      <div class="figure-card">
+        <img src="./static/images/teaser.png" alt="Qwen-3D teaser figure">
+      </div>
+      <h2 class="subtitle teaser-caption">
+        Qwen-3D performs attention directly in 3D world space, compresses multi-view observations into persistent scene tokens,
+        and grounds language with a query-based mask decoder — unifying referential grounding, instance segmentation, and VQA
+        across images and videos.
       </h2>
     </div>
   </div>
 </section>
 
-
-<!-- <section class="hero is-light is-small">
-  <div class="hero-body">
-    <div class="container">
-      <div id="results-carousel" class="carousel results-carousel">
-        <div class="item item-steve">
-          <video poster="" id="steve" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/steve.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-chair-tp">
-          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/chair-tp.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-shiba">
-          <video poster="" id="shiba" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/shiba.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-fullbody">
-          <video poster="" id="fullbody" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/fullbody.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-blueshirt">
-          <video poster="" id="blueshirt" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/blueshirt.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-mask">
-          <video poster="" id="mask" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/mask.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-coffee">
-          <video poster="" id="coffee" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/coffee.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-toby">
-          <video poster="" id="toby" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/toby2.mp4"
-                    type="video/mp4">
-          </video>
+<section class="section" id="abstract">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Large Multimodal Models (LMMs) succeed on images and short videos, but scaling them to long multi-view streams
+            remains difficult under frame-centric tokenization. 3D geometry offers a natural compression mechanism:
+            depth and camera pose fuse observations into a persistent, world-aligned representation.
+          </p>
+          <p>
+            We introduce <strong>Qwen-3D</strong>, a geometry-aware LMM built on Qwen2.5-VL that (i) compresses visual tokens
+            with multi-view geometric cues, (ii) applies <strong>3D Rotary Positional Embeddings</strong> so attention operates
+            in scene space, and (iii) connects contextualized backbone features to a <strong>query-based segmentation decoder</strong>
+            for dense language-to-geometry grounding. Across grounding, segmentation, and VQA, Qwen-3D surpasses existing 3D LMMs
+            and several proprietary 2D models, while joint 2D+3D training preserves strong 2D vision–language performance.
+          </p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-
-<section class="section">
+<section class="section is-soft" id="problem">
   <div class="container is-max-desktop">
-    <!-- Abstract. -->
-    <!-- <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            We present the first method capable of photorealistically reconstructing a non-rigidly
-            deforming scene using photos/videos captured casually from mobile phones.
-          </p>
-          <p>
-            Our approach augments neural radiance fields
-            (NeRF) by optimizing an
-            additional continuous volumetric deformation field that warps each observed point into a
-            canonical 5D NeRF.
-            We observe that these NeRF-like deformation fields are prone to local minima, and
-            propose a coarse-to-fine optimization method for coordinate-based models that allows for
-            more robust optimization.
-            By adapting principles from geometry processing and physical simulation to NeRF-like
-            models, we propose an elastic regularization of the deformation field that further
-            improves robustness.
-          </p>
-          <p>
-            We show that <span class="dnerf">Nerfies</span> can turn casually captured selfie
-            photos/videos into deformable NeRF
-            models that allow for photorealistic renderings of the subject from arbitrary
-            viewpoints, which we dub <i>"nerfies"</i>. We evaluate our method by collecting data
-            using a
-            rig with two mobile phones that take time-synchronized photos, yielding train/validation
-            images of the same pose at different viewpoints. We show that our method faithfully
-            reconstructs non-rigidly deforming scenes and reproduces unseen views with high
-            fidelity.
-          </p>
-        </div>
-      </div>
-    </div> -->
-    <!--/ Abstract. -->
+    <div class="section-label">Part 1 · The Problem</div>
+    <h2 class="title is-3">Why Current 3D LMMs Still Lag Specialists</h2>
+    <div class="content has-text-justified">
+      <p>
+        Existing 3D LMMs improve high-level spatial reasoning, yet remain far behind specialist detectors and segmentors.
+        A core issue is the interface between language reasoning and dense geometric prediction: most models decode 3D outputs
+        as text coordinates, select from detector proposals, or pass a single <code>&lt;REF&gt;</code> token into a lightweight head.
+        These interfaces create an information bottleneck between rich visual representations and precise 3D grounding.
+      </p>
+    </div>
 
-    <!-- Paper video. -->
-    <!-- <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Video</h2>
-        <div class="publication-video">
-          <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
-                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div> -->
-    <!--/ Paper video. -->
-  <!-- </div>
-</section> -->
+    <div class="figure-card">
+      <img src="./static/images/decoders.png" alt="Comparison of 3D LMM decoding strategies">
+      <p class="figure-caption">
+        <strong>Decoding object information in 3D LMMs.</strong>
+        (i) Text-space decoding generates coordinates as tokens.
+        (ii) Proposal selection is limited by external detectors.
+        (iii) Special-token decoding compresses grounding into one latent.
+        (iv) <strong>Qwen-3D</strong> routes full contextualized vision–language features into a mask decoder for dense 2D/3D grounding.
+      </p>
+    </div>
+  </div>
+</section>
 
-
-<!-- <section class="section">
+<section class="section" id="method">
   <div class="container is-max-desktop">
+    <div class="section-label">Part 2 · Our Solution</div>
+    <h2 class="title is-3">What Makes Qwen-3D Geometry-Aware?</h2>
+    <div class="content has-text-justified">
+      <p>
+        Qwen-3D extends Qwen2.5-VL with three tightly coupled components: a world-space scene representation,
+        geometry-aware vision–language attention, and a shared mask-based grounding decoder.
+      </p>
+    </div>
 
-    <div class="columns is-centered"> -->
+    <div class="criteria-grid" style="margin: 1.5rem 0 2rem;">
+      <div class="criteria-card">
+        <div class="num">1</div>
+        <h3>World-space tokens</h3>
+        <p>
+          Multi-view RGB features are unprojected with depth and camera pose, then voxel-pooled (~5cm)
+          so redundant views collapse into compact, persistent 3D tokens.
+        </p>
+      </div>
+      <div class="criteria-card">
+        <div class="num">2</div>
+        <h3>3D Rotary PE</h3>
+        <p>
+          Multimodal RoPE is extended to \((t, x, y, z)\), letting attention reason over nearby 3D locations
+          instead of independent image frames — with full attention over visual tokens.
+        </p>
+      </div>
+      <div class="criteria-card">
+        <div class="num">3</div>
+        <h3>Mask decoder interface</h3>
+        <p>
+          Object queries attend to the full visual and language token streams, predicting segmentation masks
+          and text-span grounding scores without a single-token bottleneck.
+        </p>
+      </div>
+    </div>
 
-      <!-- Visual Effects. -->
-      <!-- <div class="column">
-        <div class="content">
-          <h2 class="title is-3">Visual Effects</h2>
-          <p>
-            Using <i>nerfies</i> you can create fun visual effects. This Dolly zoom effect
-            would be impossible without nerfies since it would require going through a wall.
-          </p>
-          <video id="dollyzoom" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/dollyzoom-stacked.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-      </div> -->
-      <!--/ Visual Effects. -->
+    <div class="figure-card">
+      <img src="./static/images/architecture.png" alt="Qwen-3D architecture">
+      <p class="figure-caption">
+        <strong>Qwen-3D architecture.</strong>
+        Frozen Qwen ViT features are lifted into world coordinates, voxel-pooled, and processed by LoRA-adapted VL attention
+        with 3D Rotary PE. Shared tokens feed both a text decoder (QA/captioning) and a Mask2Former-style mask decoder
+        (grounding / instance segmentation).
+      </p>
+    </div>
 
-      <!-- Matting. -->
-      <!-- <div class="column">
-        <h2 class="title is-3">Matting</h2>
-        <div class="columns is-centered">
-          <div class="column content">
-            <p>
-              As a byproduct of our method, we can also solve the matting problem by ignoring
-              samples that fall outside of a bounding box during rendering.
-            </p>
-            <video id="matting-video" controls playsinline height="100%">
-              <source src="./static/videos/matting.mp4"
-                      type="video/mp4">
-            </video>
-          </div>
+    <div class="content has-text-justified" style="margin-top: 1.75rem;">
+      <p>
+        Training jointly supervises mask loss, text-span grounding loss, and text generation.
+        The model shares parameters across 2D and 3D: 2D tokens use grid PE, while 3D tokens use world coordinates;
+        we optionally lift 2D images to pseudo-3D with reconstruction models to improve alignment.
+        Only ~50M trainable parameters are introduced (LoRA + mask decoder).
+      </p>
+    </div>
+  </div>
+</section>
 
+<section class="section is-soft" id="results">
+  <div class="container is-max-desktop">
+    <div class="section-label">Part 3 · Key Findings</div>
+    <h2 class="title is-3">What Did We Discover?</h2>
+
+    <div class="metric-strip" style="margin: 1.25rem 0 2rem;">
+      <div class="metric-card">
+        <div class="value">+12%</div>
+        <div class="label">Acc@25 over best single-stage 3D LMMs on ScanRefer-style grounding</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">+4%</div>
+        <div class="label">Acc@25 over prior 3D-LMM SOTA (Video-3D-LLM)</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">+13%</div>
+        <div class="label">mAP over Grounded-3D-LLM on ScanNet200 instance segmentation</div>
+      </div>
+      <div class="metric-card">
+        <div class="value">55.7</div>
+        <div class="label">Acc@25 on OOD Locate-3D / ScanNet++ (vs. 33.2 prior LMM)</div>
+      </div>
+    </div>
+
+    <h3 class="title is-4">3D Visual Grounding &amp; VQA</h3>
+    <div class="content has-text-justified">
+      <p>
+        On ScanRefer, Qwen-3D reaches <strong>62.2 / 55.3</strong> Acc@25/50 — matching specialist UniVLG closely and
+        establishing a new state of the art among 3D LMMs. VQA remains competitive with much larger 7B baselines
+        while using a 3B backbone.
+      </p>
+    </div>
+
+    <div class="results-table-wrap">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>ScanRefer @25</th>
+            <th>ScanRefer @50</th>
+            <th>ScanQA EM@1</th>
+            <th>SQA3D EM@1</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group"><td colspan="5">Experts</td></tr>
+          <tr><td>UniVLG</td><td>63.5</td><td>56.4</td><td>25.7</td><td>50.2</td></tr>
+          <tr><td>Locate-3D</td><td>61.1</td><td>50.9</td><td>—</td><td>—</td></tr>
+          <tr class="group"><td colspan="5">2D VLMs</td></tr>
+          <tr><td>GPT-4o</td><td>48.2</td><td>32.5</td><td>18.0</td><td>—</td></tr>
+          <tr><td>Qwen2.5-VL-7B</td><td>41.6</td><td>14.9</td><td>—</td><td>—</td></tr>
+          <tr class="group"><td colspan="5">3D LMMs</td></tr>
+          <tr><td>Video-3D LLM-7B</td><td>58.1</td><td>51.7</td><td><strong>30.1</strong></td><td><strong>58.6</strong></td></tr>
+          <tr><td>LLaVA-3D-7B</td><td>50.1</td><td>42.7</td><td>27.0</td><td>55.6</td></tr>
+          <tr><td>Grounded 3D-LLM</td><td>48.6</td><td>44.0</td><td>—</td><td>—</td></tr>
+          <tr class="ours"><td>Qwen-3D-3B (Ours)</td><td><strong>62.2</strong></td><td><strong>55.3</strong></td><td>28.0</td><td>55.4</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="takeaway">
+      Takeaway: Dense mask decoding + world-space attention closes much of the gap between generalist 3D LMMs and specialist grounding models — even with a smaller 3B backbone.
+    </div>
+
+    <h3 class="title is-4" style="margin-top: 2.5rem;">Out-of-Domain Grounding &amp; Instance Segmentation</h3>
+    <div class="columns is-desktop" style="margin-top: 1rem;">
+      <div class="column">
+        <div class="results-table-wrap">
+          <table class="results-table">
+            <thead>
+              <tr><th colspan="3">Locate-3D / ScanNet++ (OOD)</th></tr>
+              <tr><th>Model</th><th>Acc@25</th><th>Acc@50</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>UniVLG</td><td>32.3</td><td>24.6</td></tr>
+              <tr><td>Video-3D LLM</td><td>33.2</td><td>27.6</td></tr>
+              <tr class="ours"><td>Qwen-3D</td><td><strong>55.7</strong></td><td><strong>43.4</strong></td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
-    </div> -->
-    <!--/ Matting. -->
-
-
-    <!-- Concurrent Work. -->
-    <!-- <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Related Links</h2>
-
-        <div class="content has-text-justified">
-          <p>
-            There's a lot of excellent work that was introduced around the same time as ours.
-          </p>
-          <p>
-            <a href="https://arxiv.org/abs/2104.09125">Progressive Encoding for Neural Optimization</a> introduces an idea similar to our windowed position encoding for coarse-to-fine optimization.
-          </p>
-          <p>
-            <a href="https://www.albertpumarola.com/research/D-NeRF/index.html">D-NeRF</a> and <a href="https://gvv.mpi-inf.mpg.de/projects/nonrigid_nerf/">NR-NeRF</a>
-            both use deformation fields to model non-rigid scenes.
-          </p>
-          <p>
-            Some works model videos with a NeRF by directly modulating the density, such as <a href="https://video-nerf.github.io/">Video-NeRF</a>, <a href="https://www.cs.cornell.edu/~zl548/NSFF/">NSFF</a>, and <a href="https://neural-3d-video.github.io/">DyNeRF</a>
-          </p>
-          <p>
-            There are probably many more by the time you are reading this. Check out <a href="https://dellaert.github.io/NeRF/">Frank Dellart's survey on recent NeRF papers</a>, and <a href="https://github.com/yenchenlin/awesome-NeRF">Yen-Chen Lin's curated list of NeRF papers</a>.
-          </p>
+      <div class="column">
+        <div class="results-table-wrap">
+          <table class="results-table">
+            <thead>
+              <tr><th colspan="3">ScanNet200 Instance Seg.</th></tr>
+              <tr><th>Model</th><th>mAP</th><th>mAP25</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>UniVLG (lang-prompted)</td><td>27.9</td><td>46.1</td></tr>
+              <tr><td>Grounded-3D-LLM</td><td>12.1</td><td>16.8</td></tr>
+              <tr class="ours"><td>Qwen-3D</td><td><strong>25.3</strong></td><td><strong>41.5</strong></td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
-    </div> -->
-    <!--/ Concurrent Work. -->
+    </div>
+    <div class="takeaway">
+      Takeaway: Direct decoding from VLM features generalizes better out-of-domain than proposal-selection pipelines, and unlocks full-scene instance segmentation for LMMs.
+    </div>
 
-  <!-- </div>
-</section> -->
+    <h3 class="title is-4" style="margin-top: 2.5rem;">Ablations: Where Do the Gains Come From?</h3>
+    <div class="content has-text-justified">
+      <p>
+        Controlled ablations on ScanRefer (Top-1@0.5, 50-scene subset) show that the full text/visual token interface,
+        aligned 3D RoPE, full attention over visual tokens, and LoRA finetuning of the VLM are all critical.
+      </p>
+    </div>
+    <div class="results-table-wrap">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Ablation</th>
+            <th>Variant</th>
+            <th>Top-1 Acc.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Decoder interface</td><td>Qwen-3D with <code>&lt;REF&gt;</code> token</td><td>39.7</td></tr>
+          <tr class="ours"><td>Decoder interface</td><td>Full text + visual tokens (ours)</td><td><strong>53.5</strong></td></tr>
+          <tr><td>Positional embedding</td><td>2D / Vanilla 3D</td><td>53.2 / 49.9</td></tr>
+          <tr class="ours"><td>Positional embedding</td><td>Aligned 3D RoPE (ours)</td><td><strong>53.5</strong></td></tr>
+          <tr><td>Attention mask</td><td>Causal</td><td>36.4</td></tr>
+          <tr class="ours"><td>Attention mask</td><td>Full (ours)</td><td><strong>53.5</strong></td></tr>
+          <tr><td>VLM tuning</td><td>Frozen</td><td>37.0</td></tr>
+          <tr class="ours"><td>VLM tuning</td><td>LoRA finetune (ours)</td><td><strong>53.5</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
 
+    <div class="content has-text-justified" style="margin-top: 2rem;">
+      <p>
+        Joint 2D+3D training also preserves backbone strength on RefCOCO / RealWorldQA
+        (e.g., RefCOCO 88.1 vs. Qwen2.5-VL-3B 89.1), showing geometry-aware reasoning can be added without collapsing 2D competence.
+      </p>
+    </div>
+  </div>
+</section>
 
-<!-- <section class="section" id="BibTeX">
+<section class="section" id="gallery">
+  <div class="container is-max-desktop">
+    <div class="section-label">Part 4 · Qualitative Results</div>
+    <h2 class="title is-3">See Qwen-3D in Action</h2>
+    <div class="content has-text-justified">
+      <p>
+        Qwen-3D unifies 3D referential grounding, instance segmentation, situated VQA, and strong 2D grounding/segmentation
+        under one architecture.
+      </p>
+    </div>
+
+    <div class="figure-card" style="margin-bottom: 1.25rem;">
+      <img src="./static/images/grounding_3d.png" alt="3D referential grounding qualitative results">
+      <p class="figure-caption"><strong>3D referential grounding</strong> on SR3D, NR3D, and ScanRefer.</p>
+    </div>
+
+    <div class="gallery-grid" style="margin-bottom: 1.25rem;">
+      <div class="figure-card">
+        <img src="./static/images/detection.png" alt="2D and 3D instance segmentation">
+        <p class="figure-caption"><strong>Instance segmentation</strong> on COCO (2D) and ScanNet200 (3D).</p>
+      </div>
+      <div class="figure-card">
+        <img src="./static/images/vqa.png" alt="3D and 2D visual question answering">
+        <p class="figure-caption"><strong>Visual question answering</strong> on ScanQA, SQA3D, and RealWorldQA.</p>
+      </div>
+    </div>
+
+    <div class="figure-card" style="margin-bottom: 1.25rem;">
+      <img src="./static/images/grounding_2d.png" alt="2D grounding qualitative results">
+      <p class="figure-caption"><strong>2D referential grounding</strong> retained after 3D adaptation.</p>
+    </div>
+
+    <h3 class="title is-4" style="margin-top: 1.5rem;">Demo Videos</h3>
+    <div class="video-grid" style="margin-top: 1rem;">
+      <div class="figure-card">
+        <video controls muted playsinline poster="./static/images/gallery/poster_teaser.png">
+          <source src="./static/videos/demo1.mp4" type="video/mp4">
+        </video>
+        <p class="figure-caption">Demo clip from project materials.</p>
+      </div>
+      <div class="figure-card">
+        <video controls muted playsinline poster="./static/images/teaser.png">
+          <source src="./static/videos/demo2.mp4" type="video/mp4">
+        </video>
+        <p class="figure-caption">Additional qualitative walkthrough.</p>
+      </div>
+    </div>
+
+    <h3 class="title is-4" style="margin-top: 2rem;">More Visualizations</h3>
+    <div id="results-carousel" class="carousel results-carousel" style="margin-top: 1rem;">
+      <div class="item">
+        <img src="./static/images/gallery/qual_3d_1.png" alt="Qualitative 3D example 1">
+      </div>
+      <div class="item">
+        <img src="./static/images/gallery/qual_3d_2.png" alt="Qualitative 3D example 2">
+      </div>
+      <div class="item">
+        <img src="./static/images/gallery/qual_3d_3.png" alt="Qualitative 3D example 3">
+      </div>
+      <div class="item">
+        <img src="./static/images/gallery/qual_2d_1.png" alt="Qualitative 2D example 1">
+      </div>
+      <div class="item">
+        <img src="./static/images/gallery/qual_2d_2.png" alt="Qualitative 2D example 2">
+      </div>
+      <div class="item">
+        <img src="./static/images/gallery/poster_teaser.png" alt="Poster teaser">
+      </div>
+    </div>
+
+    <div class="columns is-desktop" style="margin-top: 1.5rem;">
+      <div class="column">
+        <div class="figure-card">
+          <img src="./static/images/num_views.png" alt="Number of views ablation">
+          <p class="figure-caption">Scaling with number of input views on ScanRefer.</p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="figure-card">
+          <img src="./static/images/failures.png" alt="Failure cases">
+          <p class="figure-caption">Representative failure modes analyzed in the appendix.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section is-soft" id="future">
+  <div class="container is-max-desktop">
+    <div class="section-label">Part 5 · Open Directions</div>
+    <h2 class="title is-3">What's Next?</h2>
+    <div class="future-grid" style="margin-top: 1.25rem;">
+      <div class="future-card">
+        <h3>Dynamic 4D scenes</h3>
+        <p>
+          Qwen-3D assumes a largely static world frame. Extending geometry-aware attention and grounding to
+          non-rigid motion, interactions, and topology changes is a key next step.
+        </p>
+      </div>
+      <div class="future-card">
+        <h3>Compositional multi-step grounding</h3>
+        <p>
+          Many embodied tasks need iterative reasoning over multiple entities. Coupling mask grounding with
+          multi-step planners could unlock richer instruction following.
+        </p>
+      </div>
+      <div class="future-card">
+        <h3>End-to-end geometry estimation</h3>
+        <p>
+          Depth and pose are currently external. Jointly optimizing reconstruction with language-guided understanding
+          may further improve robustness when sensors are noisy.
+        </p>
+      </div>
+      <div class="future-card">
+        <h3>Stronger geometry-aware decoding</h3>
+        <p>
+          Our results suggest geometry-aware representations alone are insufficient — dense decoding interfaces
+          are equally important for closing the specialist gap.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="bibtex">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@article{park2021nerfies,
-  author    = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
-  title     = {Nerfies: Deformable Neural Radiance Fields},
-  journal   = {ICCV},
-  year      = {2026},
-}</code></pre>
+    <div class="bibtex-box">
+      <button class="copy-btn" id="copy-bibtex" type="button">Copy</button>
+      <pre id="bibtex-text">@inproceedings{lin2026qwen3d,
+  title     = {Qwen-3D: A Generalist 3D Vision-Language Model for Spatial Understanding},
+  author    = {Lin, Lucy and Jain, Ayush and Liu, Yifan and Fragkiadaki, Katerina},
+  booktitle = {European Conference on Computer Vision (ECCV)},
+  year      = {2026}
+}</pre>
+    </div>
   </div>
-</section> -->
-
+</section>
 
 <footer class="footer">
   <div class="container">
-    <div class="content has-text-centered">
-      <a class="icon-link"
-         href="https://github.com/ll220/qwen3d">
-        <i class="fas fa-file-pdf"></i>
-      </a>
-      <a class="icon-link" href="https://github.com/ll220" class="external-link" disabled>
-        <i class="fab fa-github"></i>
-      </a>
-    </div>
     <div class="columns is-centered">
       <div class="column is-8">
-        <div class="content">
+        <div class="content has-text-centered">
           <p>
-            This website is licensed under a <a rel="license"
-                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.
-          </p>
-          <p>
-            Source code of this website is borrowed from <a
-              href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>
+            This website is licensed under a
+            <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+              Creative Commons Attribution-ShareAlike 4.0 International License
+            </a>.
+            Template adapted from
+            <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>
+            / academic project pages such as
+            <a href="https://real-3dqa.github.io/">Real-3DQA</a>.
           </p>
         </div>
       </div>
     </div>
   </div>
 </footer>
+
+<script>
+  (function () {
+    const navLinks = Array.from(document.querySelectorAll("#top-nav a"));
+    const sections = navLinks
+      .map((a) => document.querySelector(a.getAttribute("href")))
+      .filter(Boolean);
+
+    function setActive() {
+      const y = window.scrollY + 120;
+      let current = sections[0];
+      for (const section of sections) {
+        if (section.offsetTop <= y) current = section;
+      }
+      navLinks.forEach((a) => {
+        a.classList.toggle("is-active", a.getAttribute("href") === "#" + current.id);
+      });
+    }
+
+    window.addEventListener("scroll", setActive, { passive: true });
+    setActive();
+
+    const btn = document.getElementById("copy-bibtex");
+    const text = document.getElementById("bibtex-text");
+    if (btn && text) {
+      btn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(text.textContent);
+          btn.textContent = "Copied";
+          setTimeout(() => (btn.textContent = "Copy"), 1500);
+        } catch (e) {
+          btn.textContent = "Select & copy";
+        }
+      });
+    }
+
+    if (window.bulmaCarousel) {
+      bulmaCarousel.attach("#results-carousel", {
+        slidesToScroll: 1,
+        slidesToShow: 1,
+        infinite: true,
+        autoplay: true,
+        autoplaySpeed: 3500,
+      });
+    }
+  })();
+</script>
 
 </body>
 </html>

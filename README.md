@@ -1,16 +1,30 @@
-# Nerfies
+# Qwen-3D Project Page
 
-This is the repository that contains source code for the [Nerfies website](https://nerfies.github.io).
+Static academic project website for **Qwen-3D: A Generalist 3D Vision-Language Model for Spatial Understanding**.
 
-If you find Nerfies useful for your work please cite:
+Style inspiration: [Real-3DQA](https://real-3dqa.github.io/) / [Nerfies](https://nerfies.github.io/) project pages.
+
+## Local preview
+
+```bash
+cd qwen-3d.github.io
+python -m http.server 8000
 ```
-@article{park2021nerfies
-  author    = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
-  title     = {Nerfies: Deformable Neural Radiance Fields},
-  journal   = {ICCV},
-  year      = {2021},
-}
-```
 
-# Website License
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+Then open [http://localhost:8000](http://localhost:8000).
+
+## Deploy (GitHub Pages)
+
+1. Create a GitHub repo named `qwen-3d.github.io` (or enable Pages on any repo's `main` branch `/` root).
+2. Push this folder.
+3. In repo Settings → Pages, set source to `main` / root.
+
+## Assets
+
+- Paper figures converted from `overleaf/qwen3d-eccv/figures`
+- Selected media from `Research/Qwen3D.pptx` and related decks in `Documents`
+- Re-run asset prep if figures change:
+
+```bash
+python _prepare_assets.py
+```
