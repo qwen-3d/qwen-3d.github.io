@@ -110,9 +110,11 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Large Multimodal Models (LMMs) succeed on images and short videos, but scaling them to long multi-view streams
-            remains difficult under frame-centric tokenization. 3D geometry offers a natural compression mechanism:
-            depth and camera pose fuse observations into a persistent, world-aligned representation.
+            Large Multimodal Models (LMMs) succeed on images and short videos, yet scaling them to long videos remains hard
+            under frame-centric tokenization. 3D geometry offers a natural compression mechanism: depth and camera pose fuse
+            multi-view observations into a persistent, world-aligned representation. Recent 3D LMMs improve spatial reasoning,
+            but still lag specialists on grounding and segmentation — often because geometry-aware decoding is bottlenecked
+            through language tokens, proposal selection, or lightweight grounding queries.
           </p>
           <p>
             We introduce <strong>Qwen-3D</strong>, a geometry-aware LMM built on Qwen2.5-VL that (i) compresses visual tokens
@@ -195,9 +197,9 @@
       <img src="./static/images/architecture.png" alt="Qwen-3D architecture">
       <p class="figure-caption">
         <strong>Qwen-3D architecture.</strong>
-        Frozen Qwen ViT features are lifted into world coordinates, voxel-pooled, and processed by LoRA-adapted VL attention
-        with 3D Rotary PE. Shared tokens feed both a text decoder (QA/captioning) and a Mask2Former-style mask decoder
-        (grounding / instance segmentation).
+        Multi-view RGB-D features from the frozen Qwen ViT are unprojected into world coordinates, voxel-pooled, and fused
+        with text via LoRA-adapted VL attention with 3D Rotary PE. Shared tokens feed a 3D mask decoder (grounding /
+        instance segmentation) and a text decoder (open-ended QA).
       </p>
     </div>
 
@@ -220,7 +222,7 @@
     <div class="metric-strip" style="margin: 1.25rem 0 2rem;">
       <div class="metric-card">
         <div class="value">+12%</div>
-        <div class="label">Acc@25 over best single-stage 3D LMMs on ScanRefer-style grounding</div>
+        <div class="label">Acc@25 over best single-stage 3D LMMs on ScanRefer</div>
       </div>
       <div class="metric-card">
         <div class="value">+4%</div>
@@ -239,9 +241,9 @@
     <h3 class="title is-4">3D Visual Grounding &amp; VQA</h3>
     <div class="content has-text-justified">
       <p>
-        On ScanRefer, Qwen-3D reaches <strong>62.2 / 55.3</strong> Acc@25/50 — matching specialist UniVLG closely and
-        establishing a new state of the art among 3D LMMs. VQA remains competitive with much larger 7B baselines
-        while using a 3B backbone.
+        On ScanRefer, Qwen-3D-3B reaches <strong>62.2 / 55.3</strong> Acc@25/50 and the 7B variant reaches
+        <strong>62.8 / 54.7</strong> — matching specialist UniVLG closely and establishing a new state of the art among
+        3D LMMs. The 3B model is already competitive on VQA; the 7B model leads ScanQA and SQA3D EM@1.
       </p>
     </div>
 
@@ -264,15 +266,16 @@
           <tr><td>GPT-4o</td><td>48.2</td><td>32.5</td><td>18.0</td><td>—</td></tr>
           <tr><td>Qwen2.5-VL-7B</td><td>41.6</td><td>14.9</td><td>—</td><td>—</td></tr>
           <tr class="group"><td colspan="5">3D LMMs</td></tr>
-          <tr><td>Video-3D LLM-7B</td><td>58.1</td><td>51.7</td><td><strong>30.1</strong></td><td><strong>58.6</strong></td></tr>
+          <tr><td>Video-3D LLM-7B</td><td>58.1</td><td>51.7</td><td>30.1</td><td>58.6</td></tr>
           <tr><td>LLaVA-3D-7B</td><td>50.1</td><td>42.7</td><td>27.0</td><td>55.6</td></tr>
           <tr><td>Grounded 3D-LLM</td><td>48.6</td><td>44.0</td><td>—</td><td>—</td></tr>
-          <tr class="ours"><td>Qwen-3D-3B (Ours)</td><td><strong>62.2</strong></td><td><strong>55.3</strong></td><td>28.0</td><td>55.4</td></tr>
+          <tr class="ours"><td>Qwen-3D-3B (Ours)</td><td>62.2</td><td><strong>55.3</strong></td><td>28.0</td><td>55.4</td></tr>
+          <tr class="ours"><td>Qwen-3D-7B (Ours)</td><td><strong>62.8</strong></td><td>54.7</td><td><strong>31.5</strong></td><td><strong>59.6</strong></td></tr>
         </tbody>
       </table>
     </div>
     <div class="takeaway">
-      Takeaway: Dense mask decoding + world-space attention closes much of the gap between generalist 3D LMMs and specialist grounding models — even with a smaller 3B backbone.
+      Takeaway: Dense mask decoding + world-space attention closes much of the gap between generalist 3D LMMs and specialist grounding models — already with a 3B backbone, and further on VQA with 7B.
     </div>
 
     <h3 class="title is-4" style="margin-top: 2.5rem;">Out-of-Domain Grounding &amp; Instance Segmentation</h3>
@@ -287,7 +290,7 @@
             <tbody>
               <tr><td>UniVLG</td><td>32.3</td><td>24.6</td></tr>
               <tr><td>Video-3D LLM</td><td>33.2</td><td>27.6</td></tr>
-              <tr class="ours"><td>Qwen-3D</td><td><strong>55.7</strong></td><td><strong>43.4</strong></td></tr>
+              <tr class="ours"><td>Qwen-3D-3B</td><td><strong>55.7</strong></td><td><strong>43.4</strong></td></tr>
             </tbody>
           </table>
         </div>
@@ -302,7 +305,7 @@
             <tbody>
               <tr><td>UniVLG (lang-prompted)</td><td>27.9</td><td>46.1</td></tr>
               <tr><td>Grounded-3D-LLM</td><td>12.1</td><td>16.8</td></tr>
-              <tr class="ours"><td>Qwen-3D</td><td><strong>25.3</strong></td><td><strong>41.5</strong></td></tr>
+              <tr class="ours"><td>Qwen-3D-3B</td><td><strong>25.3</strong></td><td><strong>41.5</strong></td></tr>
             </tbody>
           </table>
         </div>
